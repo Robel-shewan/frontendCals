@@ -183,7 +183,7 @@ export default function NavBar() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", mb: 3, height: "2vh" }}>
         <CssBaseline />
         <AppBar
           sx={{ backgroundColor: "#FE6B8B", color: "white" }}
