@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
@@ -18,11 +18,30 @@ import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import { Link, Route, Switch } from "react-router-dom";
-import { Tooltip, Avatar, Menu, MenuItem } from "@mui/material";
+import { makeStyles, ThemeProvider } from "@mui/styles";
+import {
+  Tooltip,
+  Avatar,
+  Menu,
+  MenuItem,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  createTheme,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { purple } from "@mui/material/colors";
 
 const drawerWidth = 240;
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: purple[500],
+    },
+  },
+});
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -89,7 +108,14 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function NavBar(setting) {
+const useStyles = makeStyles({
+  navBrand: {
+    flexGrow: "1",
+  },
+});
+
+export default function NavBar({ settings }) {
+  const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
   const userLogin = useSelector((state) => state.userLogin);
@@ -102,10 +128,20 @@ export default function NavBar(setting) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
+  // const handleAccordionChange = (panel) => {
+  //   console.log({ event, isExpanded });
+  //   setExpandedPanel(isExpanded ? panel : false);
+  // };
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
+  // const [expandedPanel, setExpandedPanel] = useState(false);
 
+  // const handleAccordionChange = (panel) => (event, isExpanded) => {
+  //   console.log({ event, isExpanded });
+  //   setExpandedPanel(isExpanded ? panel : false);
+  // };
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
@@ -123,80 +159,91 @@ export default function NavBar(setting) {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <AppBar position="fixed">
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{
-              marginRight: "36px",
-              ...(open && { display: "none" }),
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-
-          <Typography className="classes.navBar" variant="h6" component="div">
-            CALS HR
-          </Typography>
-          {/* <Typography variant="h6" component="div">
-            <Link to="/login">Login</Link>
-          </Typography> */}
-
-          {/* 
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+    <ThemeProvider theme={theme}>
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
+        <AppBar
+          sx={{ backgroundColor: "#FE6B8B", color: "white" }}
+          position="fixed"
+          open={open}
+        >
+          <Toolbar>
+            {userInfo && (
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+                sx={{
+                  marginRight: "36px",
+                  ...(open && { display: "none" }),
+                }}
+              >
+                <MenuIcon />
               </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+            )}
+
+            <Typography
+              className="classes.navBrand"
+              variant="h6"
+              component="div"
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box> */}
-        </Toolbar>
-      </AppBar>
+              CALS HR
+            </Typography>
+            <Typography className={classes.navBrand} variant="h6">
+              <Link to="/login">Login</Link>
+            </Typography>
+            {userInfo && (
+              <Box sx={{ flexGrow: 0 }}>
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar alt="Remy Sharp" src="./robel.jpg" />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  {settings.map((setting) => (
+                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                      <Typography textAlign="center">{setting}</Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </Box>
+            )}
+          </Toolbar>
+        </AppBar>
 
-      {/* Drawer implementation */}
+        {/* Drawer implementation */}
 
-      {userInfo && (
-        <Drawer variant="permanent" open={open}>
-          <DrawerHeader>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === "rtl" ? (
-                <ChevronRightIcon />
-              ) : (
-                <ChevronLeftIcon />
-              )}
-            </IconButton>
-          </DrawerHeader>
-          <Divider />
-          <List>
-            {["Employee", "Leave asign ", "Leave Apply ", "list users"].map(
-              (text, index) => (
+        {userInfo && (
+          <Drawer variant="permanent" open={open}>
+            <DrawerHeader>
+              <IconButton onClick={handleDrawerClose}>
+                {theme.direction === "rtl" ? (
+                  <ChevronRightIcon />
+                ) : (
+                  <ChevronLeftIcon />
+                )}
+              </IconButton>
+            </DrawerHeader>
+            {open && <Typography variant="p"> Employee </Typography>}
+
+            <List>
+              {["list Employee", "Add Employee "].map((text, index) => (
                 <ListItem
                   button
                   key={text}
@@ -209,55 +256,39 @@ export default function NavBar(setting) {
                   </ListItemIcon>
                   <ListItemText primary={text} />
                 </ListItem>
-              )
-            )}
-          </List>
-          <Divider />
-          <Typography variant="h6">Mini variant drawer</Typography>
-          <List>
-            {["performance", "Directory", "Spam"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
-        </Drawer>
-      )}
-      {/* <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
-        <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
-          dolor purus non enim praesent elementum facilisis leo vel. Risus at
-          ultrices mi tempus imperdiet. Semper risus in hendrerit gravida rutrum
-          quisque non tellus. Convallis convallis tellus id interdum velit
-          laoreet id donec ultrices. Odio morbi quis commodo odio aenean sed
-          adipiscing. Amet nisl suscipit adipiscing bibendum est ultricies
-          integer quis. Cursus euismod quis viverra nibh cras. Metus vulputate
-          eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo
-          quis imperdiet massa tincidunt. Cras tincidunt lobortis feugiat
-          vivamus at augue. At augue eget arcu dictum varius duis at consectetur
-          lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa sapien
-          faucibus et molestie ac.
-        </Typography>
-        <Typography paragraph>
-          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est
-          ullamcorper eget nulla facilisi etiam dignissim diam. Pulvinar
-          elementum integer enim neque volutpat ac tincidunt. Ornare suspendisse
-          sed nisi lacus sed viverra tellus. Purus sit amet volutpat consequat
-          mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis
-          risus sed vulputate odio. Morbi tincidunt ornare massa eget egestas
-          purus viverra accumsan in. In hendrerit gravida rutrum quisque non
-          tellus orci ac. Pellentesque nec nam aliquam sem et tortor. Habitant
-          morbi tristique senectus et. Adipiscing elit duis tristique
-          sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-          eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-          posuere sollicitudin aliquam ultrices sagittis orci a.
-        </Typography>
-      </Box> */}
-    </Box>
+              ))}
+              {/* <Accordion /> */}
+            </List>
+            <Divider />
+            {open && <Typography variant="p">Mini variant drawer</Typography>}
+
+            <List>
+              {["performance", "Directory", "Spam"].map((text, index) => (
+                <ListItem button key={text}>
+                  <ListItemIcon>
+                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItem>
+              ))}
+            </List>
+          </Drawer>
+        )}
+
+        {/* <Accordion
+        expanded={expandedPanel === "panel1"}
+        onChange={handleAccordionChange("panel1")}
+      >
+        <AccordionSummary expandIcon={<ExpandMore />}>
+          Accordion 1
+        </AccordionSummary>
+
+        <AccordionDetails>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+          malesuada lacus ex, sit amet blandit leo lobortis eget.
+        </AccordionDetails>
+      </Accordion> */}
+      </Box>
+    </ThemeProvider>
   );
 }
