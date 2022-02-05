@@ -32,8 +32,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { purple } from "@mui/material/colors";
+import { logout } from "../../store/actions/userActions";
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 const theme = createTheme({
   palette: {
@@ -114,7 +115,25 @@ const useStyles = makeStyles({
   },
 });
 
-export default function NavBar({ settings }) {
+let employee = [
+  {
+    title: "list employee",
+    path: "/list-employee",
+  },
+  {
+    title: "Add Employee",
+    path: "/add-employee",
+  },
+  {
+    title: "Add Training",
+    path: "/add-training",
+  },
+  {
+    title: "List Training",
+    path: "/list-training",
+  },
+];
+export default function NavBar() {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -144,6 +163,10 @@ export default function NavBar({ settings }) {
   // };
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
   };
 
   const handleCloseUserMenu = () => {
@@ -187,12 +210,17 @@ export default function NavBar({ settings }) {
               className="classes.navBrand"
               variant="h6"
               component="div"
+              className={classes.navBrand}
             >
               CALS HR
             </Typography>
-            <Typography className={classes.navBrand} variant="h6">
-              <Link to="/login">Login</Link>
-            </Typography>
+
+            {!userInfo && (
+              <Typography variant="h6" sx={{ textDecoration: "none" }}>
+                <Link to="/login">Login</Link>
+              </Typography>
+            )}
+
             {userInfo && (
               <Box sx={{ flexGrow: 0 }}>
                 <Tooltip title="Open settings">
@@ -216,11 +244,14 @@ export default function NavBar({ settings }) {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">{setting}</Typography>
-                    </MenuItem>
-                  ))}
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">Profile</Typography>
+                  </MenuItem>
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center" onClick={handleLogout}>
+                      Logout
+                    </Typography>
+                  </MenuItem>
                 </Menu>
               </Box>
             )}
@@ -243,24 +274,24 @@ export default function NavBar({ settings }) {
             {open && <Typography variant="p"> Employee </Typography>}
 
             <List>
-              {["list Employee", "Add Employee "].map((text, index) => (
+              {employee.map((text, index) => (
                 <ListItem
                   button
-                  key={text}
+                  key={text.title}
                   onClick={() => {
-                    history.push("/employee");
+                    history.push(text.path);
                   }}
                 >
                   <ListItemIcon>
                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                   </ListItemIcon>
-                  <ListItemText primary={text} />
+                  <ListItemText primary={text.title} />
                 </ListItem>
               ))}
               {/* <Accordion /> */}
             </List>
             <Divider />
-            {open && <Typography variant="p">Mini variant drawer</Typography>}
+            {open && <Typography variant="p">performance</Typography>}
 
             <List>
               {["performance", "Directory", "Spam"].map((text, index) => (
@@ -274,20 +305,6 @@ export default function NavBar({ settings }) {
             </List>
           </Drawer>
         )}
-
-        {/* <Accordion
-        expanded={expandedPanel === "panel1"}
-        onChange={handleAccordionChange("panel1")}
-      >
-        <AccordionSummary expandIcon={<ExpandMore />}>
-          Accordion 1
-        </AccordionSummary>
-
-        <AccordionDetails>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-          malesuada lacus ex, sit amet blandit leo lobortis eget.
-        </AccordionDetails>
-      </Accordion> */}
       </Box>
     </ThemeProvider>
   );

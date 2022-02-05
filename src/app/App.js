@@ -3,10 +3,9 @@ import Routes from "./routes";
 import NavBar from "./components/NavBar";
 
 function App() {
-  const setting = ["Profile", "Account", "Dashboard"];
   return (
     <BrowserRouter>
-      <NavBar settings={setting} />
+      <NavBar />
       <main>
         <Routes />
       </main>

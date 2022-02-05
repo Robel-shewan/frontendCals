@@ -10,6 +10,7 @@ const Routes = () => {
       <Switch>
         <Route path="/login" component={LoginPage} />
         <Route path="/about" component={About} />
+
         <Route path="/" component={DashboardPage} />
       </Switch>
     </div>
